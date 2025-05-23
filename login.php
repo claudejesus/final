@@ -1,50 +1,68 @@
 <?php
-// session_start();
-require 'db.php';
+session_start();
+require 'config/database.php';
 
-$error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
-    $password = md5($_POST['password']); // Simple hashing, upgrade to bcrypt in production
-
-    $stmt = $conn->prepare("SELECT * FROM users WHERE username=? AND password=?");
-    $stmt->bind_param("ss", $username, $password);
+    $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
     $stmt->execute();
-    $res = $stmt->get_result();
-
-    if ($res->num_rows == 1) {
-        $user = $res->fetch_assoc();
-        $_SESSION['user'] = $user;
-
-        // Redirect by role
-        if ($user['role'] == 'admin') {
-            header("Location: admin.php");
-            exit;
-        } else {
-            header("Location: farmer.php");
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 1) {
+        $user = $result->fetch_assoc();
+        if (password_verify($password, $user['password'])) {
+            $_SESSION['user'] = [
+                'id' => $user['id'],
+                'username' => $user['username'],
+                'role' => $user['role']
+            ];
+            
+            header('Location: index.php');
             exit;
         }
-    } else {
-        $error = "Invalid username or password";
     }
+    
+    $error = "Invalid username or password";
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Login - Maize Weevil Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Monitoring - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
-<body>
-    <h2>Login</h2>
-    <?php if ($error): ?>
-        <p style="color:red;"><?php echo $error; ?></p>
-    <?php endif; ?>
-    <form method="POST">
-        <input type="text" name="username" placeholder="Username" required /><br><br>
-        <input type="password" name="password" placeholder="Password" required /><br><br>
-        <button type="submit">Login</button>
-    </form>
+<body class="bg-light">
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <h2 class="text-center mb-4">Farm Monitoring</h2>
+                        <?php if (isset($error)): ?>
+                            <div class="alert alert-danger"><?= $error ?></div>
+                        <?php endif; ?>
+                        <form method="POST">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
