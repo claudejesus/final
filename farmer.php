@@ -35,7 +35,7 @@ $humidities = array_column($sensor_data, 'humidity');
 </head>
 <body>
 
-<!-- <h2>Welcome, //<?= $_SESSION['user']['username'] ?> (Farmer)</h2> -->
+<h2>Welcome, <?= $_SESSION['user']['username'] ?> (Farmer)</h2>
 <a href="logout.php">Logout</a>
 
 <h3>Sensor Data</h3>

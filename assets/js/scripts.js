@@ -320,38 +320,24 @@ document.addEventListener('submit', function(e) {
     }
 });
 
-// Delete farmer handler
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('delete-farmer') || e.target.closest('.delete-farmer')) {
-        const button = e.target.classList.contains('delete-farmer') ? e.target : e.target.closest('.delete-farmer');
-        const username = button.dataset.username;
-        
-        if (confirm(`Are you sure you want to delete farmer ${username}?`)) {
-            const spinner = document.getElementById('loadingSpinner');
-            spinner.style.display = 'flex';
-            
-            fetch(`commands/delete_farmer.php?username=${encodeURIComponent(username)}`)
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.json();
-                })
+document.querySelectorAll('.delete-farmer').forEach(btn => {
+    btn.addEventListener('click', function() {
+        if (confirm('Are you sure you want to delete this farmer?')) {
+            const username = this.dataset.username;
+            fetch(`../commands/delete_farmer.php?username=${encodeURIComponent(username)}`)
+                .then(response => response.json())
                 .then(data => {
-                    showToast(data.success ? 'success' : 'error', data.message);
-                    
+                    const toast = new bootstrap.Toast(document.getElementById('toast'));
+                    document.getElementById('toastBody').innerHTML = data.success ? 
+                        '<i class="fas fa-check-circle text-success me-2"></i>' + data.message :
+                        '<i class="fas fa-times-circle text-danger me-2"></i>' + data.message;
+                    toast.show();
+
                     if (data.success) {
-                        // Reload farmers section if currently viewing it
-                        if (document.querySelector('.nav-link.active').dataset.section === 'farmers') {
-                            loadSection('farmers');
-                        }
+                        // Reload the farmers section
+                        loadSection('farmers');
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('error', 'Failed to delete farmer');
-                })
-                .finally(() => {
-                    spinner.style.display = 'none';
                 });
         }
-    }
+    });
 });

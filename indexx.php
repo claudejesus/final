@@ -1,13 +1,13 @@
 <?php
-require 'auth.php';
+// require 'auth.php';
 
 // Only allow admin access
-if ($_SESSION['user']['role'] !== 'admin') {
-    header('Location: farmer.php'); // Create farmer.php for farmer view
-    exit;
-}
+// if ($_SESSION['user']['role'] !== 'admin') {
+//     header('Location: farmer.php'); // Create farmer.php for farmer view
+//     exit;
+// }
 
-require 'config/database.php';
+require 'db.php';
 
 // Get dashboard stats
 $result = $conn->query("SELECT COUNT(*) as farmer_count FROM users WHERE role = 'farmer'");
