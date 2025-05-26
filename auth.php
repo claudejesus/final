@@ -1,12 +1,14 @@
 <?php
-// session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require 'db.php';
 
 // Redirect to login if not authenticated
-// if (!isset($_SESSION['user'])) {
-//     header('Location: login.php');
-//     exit;
-// }
+if (!isset($_SESSION['user'])) {
+    header('Location: login.php');
+    exit;
+}
 
 // Verify user exists in database
 $user_id = $_SESSION['user']['id'];
