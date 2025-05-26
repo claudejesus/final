@@ -10,6 +10,10 @@ $farmer_list = $farmers->fetch_all(MYSQLI_ASSOC);
 
 <div class="row">
     <div class="col-md-6">
+        <div class="mb-3">
+            <input type="text" id="farmerSearch" class="form-control" placeholder="Search farmers by username...">
+        </div>
+
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="card-title">
@@ -41,7 +45,7 @@ $farmer_list = $farmers->fetch_all(MYSQLI_ASSOC);
                 </h5>
             </div>
             <div class="card-body">
-                <div class="list-group">
+                <!-- <div class="list-group">
                     <?php foreach ($farmer_list as $farmer): ?>
                     <div class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
@@ -53,7 +57,18 @@ $farmer_list = $farmers->fetch_all(MYSQLI_ASSOC);
                         </button>
                     </div>
                     <?php endforeach; ?>
+                </div> -->
+                <div id="farmerList">
+                    <ul class="list-group">
+                        <?php foreach ($farmer_list as $f): ?>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="farmer-name"><?= $f['username'] ?></span>
+                                <button class="btn btn-sm btn-danger delete-farmer" data-username="<?= $f['username'] ?>">Delete</button>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
                 </div>
+
             </div>
         </div>
     </div>
