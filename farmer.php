@@ -40,7 +40,7 @@ $humidities = array_column($sensor_data, 'humidity');
                 <a href="commands/export_data.php" class="btn btn-success mb-3">
                 <i class="fas fa-file-csv me-1"></i> Export Data (CSV)
                 </a>
-
+<a href="/maize_weevil_new/sections/profileFarmer.php" class="btn btn-danger"><i class="fas fa-sign-out-alt me-1"></i> profile</a>
 <h3>Sensor Data</h3>
 <table>
     <thead>
