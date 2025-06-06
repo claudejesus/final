@@ -90,7 +90,7 @@ $farmer_count = $farmers ? $farmers->num_rows : 0;
     </div>
     <div class="card-body">
         <table class="table table-striped table-hover">
-            <thead class="table-dark">
+            <thead class="table">
                 <tr>
                     <th>Temperature (°C)</th>
                     <th>Humidity (%)</th>
