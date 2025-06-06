@@ -39,7 +39,12 @@ $farmer_count = $farmers ? $farmers->num_rows : 0;
             </a>
         </div>
         <span class="badge bg-primary align-self-center">
-            <i class="fas fa-user-shield me-1"></i> Admin
+            <!-- <i class="fas fa-user-shield me-1"></i> Admin -->
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="profile">
+                    <i class="fas fa-user-circle me-2"></i>Admin
+                </a>
+            </li>
         </span>
     </div>
 </div>
