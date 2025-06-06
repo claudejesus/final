@@ -10,3 +10,5 @@ https://bcrypt-generator.com/
 
 https://www.md5hashgenerator.com/
 
+reference video: https://youtu.be/ImiSpAjKjss?t=470
+
