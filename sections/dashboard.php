@@ -2,13 +2,12 @@
 require __DIR__ . '/../auth.php';
 require __DIR__ . '/../db.php';
 
-// Initialize arrays
+// Fetch sensor data
 $sensor_data = [];
 $temperatures = [];
 $humidities = [];
 $timestamps = [];
 
-// Fetch sensor data (last 50 entries)
 $result = $conn->query("SELECT * FROM sensor_data ORDER BY timestamp DESC LIMIT 50");
 if ($result && $result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
@@ -19,24 +18,27 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-// Fetch number of farmers
+// Fetch farmer count
 $farmers = $conn->query("SELECT id FROM users WHERE role = 'farmer'");
 $farmer_count = $farmers ? $farmers->num_rows : 0;
 ?>
 
 <!-- Dashboard Header -->
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3 border-bottom">
-    <h2>Welcome, <?= $_SESSION['user']['username'] ?></h2>
-    <h1 class="h2">Dashboard Overview</h1> 
-    <div class="btn-toolbar mb-2 mb-md-0">
+    <div>
+        <h2>Welcome, <?= htmlspecialchars($_SESSION['user']['username']) ?></h2>
+        <h1 class="h2">Dashboard Overview</h1>
+    </div>
+    <div class="btn-toolbar">
         <div class="btn-group me-2">
-            <!-- <button type="button" href="commands/export_farmers.php class="btn btn-sm btn-outline-secondary">Export</button> -->
-            <a href="commands/export_farmers.php" class="btn btn-success mb-3">
-            <i class="fas fa-file-csv me-1"></i> Export Farmers (CSV)
+            <a href="commands/export_farmers.php" class="btn btn-outline-success">
+                <i class="fas fa-file-csv me-1"></i> Export Farmers
             </a>
-
+            <a href="commands/export_data.php" class="btn btn-outline-primary">
+                <i class="fas fa-file-csv me-1"></i> Export Sensor Data
+            </a>
         </div>
-        <span class="badge bg-primary">
+        <span class="badge bg-primary align-self-center">
             <i class="fas fa-user-shield me-1"></i> Admin
         </span>
     </div>
@@ -73,7 +75,7 @@ $farmer_count = $farmers ? $farmers->num_rows : 0;
 <!-- Chart Section -->
 <div class="card mb-4">
     <div class="card-header">
-        <h5 class="card-title"><i class="fas fa-chart-line me-2"></i>Sensor Data Chart</h5>
+        <h5 class="card-title"><i class="fas fa-chart-line me-2"></i> Sensor Data Chart</h5>
     </div>
     <div class="card-body">
         <canvas id="sensorChart" height="100"></canvas>
@@ -88,7 +90,7 @@ $farmer_count = $farmers ? $farmers->num_rows : 0;
     </div>
     <div class="card-body">
         <table class="table table-striped table-hover">
-            <thead class="table">
+            <thead class="table-dark">
                 <tr>
                     <th>Temperature (°C)</th>
                     <th>Humidity (%)</th>
@@ -141,7 +143,12 @@ const sensorChart = new Chart(ctx, {
             legend: { position: 'top' }
         },
         scales: {
-            x: { ticks: { maxRotation: 45, minRotation: 30 } }
+            x: {
+                ticks: {
+                    maxRotation: 45,
+                    minRotation: 30
+                }
+            }
         }
     }
 });
