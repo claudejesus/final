@@ -1,123 +1,170 @@
 <?php
 require '../db.php';
-$farmers = $conn->query("SELECT username, created_at FROM users WHERE role = 'farmer'");
+$farmers = $conn->query("SELECT id, username, created_at FROM users WHERE role = 'farmer'");
 $farmer_list = $farmers->fetch_all(MYSQLI_ASSOC);
 ?>
 
+<!-- Farmer Management Section -->
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Farmer Management</h1>
+  <h1 class="h2">Farmer Management</h1>
 </div>
 
 <div class="row">
-    <div class="col-md-6">
+  <div class="col-md-6">
+    <input type="text" id="farmerSearch" class="form-control mb-3" placeholder="Search farmers by username...">
+
+    <!-- Register Form -->
+    <div class="card mb-4">
+      <div class="card-header"><h5><i class="fas fa-user-plus me-2"></i>Register New Farmer</h5></div>
+      <div class="card-body">
+        <form id="registerFarmerForm">
+          <div class="mb-3">
+            <label>Username</label>
+            <input type="text" class="form-control" name="username" required />
+          </div>
+          <div class="mb-3">
+            <label>Password</label>
+            <input type="password" class="form-control" name="password" required />
+          </div>
+          <button class="btn btn-primary" type="submit"><i class="fas fa-user-plus me-1"></i>Register</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Farmers Table -->
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between">
+        <h5><i class="fas fa-users me-2"></i>Registered Farmers</h5>
+        <a href="commands/export_farmers.php" class="btn btn-outline-primary btn-sm">
+          <i class="fas fa-file-csv me-1"></i> Export CSV
+        </a>
+      </div>
+      <div class="card-body">
+        <table class="table table-sm table-hover" id="farmerList">
+          <thead class="table-dark">
+            <tr><th>ID</th><th>Username</th><th>Registered</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <?php foreach ($farmer_list as $f): ?>
+              <tr>
+                <td><?= $f['id'] ?></td>
+                <td class="farmer-name"><?= htmlspecialchars($f['username']) ?></td>
+                <td><?= $f['created_at'] ?></td>
+                <td>
+                  <button class="btn btn-sm btn-warning edit-farmer" data-id="<?= $f['id'] ?>" data-username="<?= htmlspecialchars($f['username']) ?>"><i class="fas fa-edit"></i></button>
+                  <button class="btn btn-sm btn-danger delete-farmer" data-username="<?= $f['username'] ?>"><i class="fas fa-trash-alt"></i></button>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editFarmerModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form id="editFarmerForm" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Farmer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="id" id="editFarmerId" />
         <div class="mb-3">
-            <input type="text" id="farmerSearch" class="form-control" placeholder="Search farmers by username...">
+          <label for="editUsername">Username</label>
+          <input type="text" class="form-control" name="username" id="editUsername" required />
         </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" type="submit">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title">
-                    <i class="fas fa-user-plus me-2"></i>Register New Farmer
-                </h5>
-            </div>
-            <div class="card-body">
-                <form id="registerFarmerForm">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-user-plus me-1"></i> Register
-                    </button>
-                </form>
-            </div>
-        </div>
+<!-- Toast -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="toast" class="toast text-bg-dark" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="toastBody"></div>
+      <button type="button" class="btn-close btn-close-white me-2" data-bs-dismiss="toast"></button>
     </div>
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">
-                    <i class="fas fa-users me-2"></i>Registered Farmers
-                </h5>
-            </div>
-            <div class="card-body">
-                <!-- <div class="list-group">
-                    <?php foreach ($farmer_list as $farmer): ?>
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <i class="fas fa-user me-2"></i><?= $farmer['username'] ?>
-                            <small class="d-block text-muted">Registered: <?= $farmer['created_at'] ?></small>
-                        </div>
-                        <button class="btn btn-sm btn-outline-danger delete-farmer" data-username="<?= $farmer['username'] ?>">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-                    <?php endforeach; ?>
-                </div> -->
-                <div id="farmerList">
-                    <ul class="list-group">
-                        <?php foreach ($farmer_list as $f): ?>
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span class="farmer-name"><?= $f['username'] ?></span>
-                                <button class="btn btn-sm btn-danger delete-farmer" data-username="<?= $f['username'] ?>">Delete</button>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
 
 <script>
+document.addEventListener('click', function(e) {
+  // Edit
+  if (e.target.closest('.edit-farmer')) {
+    const btn = e.target.closest('.edit-farmer');
+    document.getElementById('editFarmerId').value = btn.dataset.id;
+    document.getElementById('editUsername').value = btn.dataset.username;
+    new bootstrap.Modal(document.getElementById('editFarmerModal')).show();
+  }
+
+  // Delete
+  if (e.target.closest('.delete-farmer')) {
+    const username = e.target.closest('.delete-farmer').dataset.username;
+    if (confirm('Delete farmer ' + username + '?')) {
+      fetch(`../commands/delete_farmer.php?username=${encodeURIComponent(username)}`)
+        .then(res => res.json())
+        .then(data => {
+          showToast(data.message);
+          if (data.success) loadSection('farmers');
+        });
+    }
+  }
+});
+
+// Register Farmer
 document.getElementById('registerFarmerForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    
-    fetch('../commands/register_farmer.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
+  e.preventDefault();
+  const formData = new FormData(this);
+  fetch('../commands/register_farmer.php', { method: 'POST', body: formData })
+    .then(res => res.json())
     .then(data => {
-        const toast = new bootstrap.Toast(document.getElementById('toast'));
-        document.getElementById('toastBody').innerHTML = data.success ? 
-            '<i class="fas fa-check-circle text-success me-2"></i>' + data.message :
-            '<i class="fas fa-times-circle text-danger me-2"></i>' + data.message;
-        toast.show();
-        
-        if (data.success) {
-            this.reset();
-            // Reload the farmers section
-            loadSection('farmers');
-        }
+      showToast(data.message);
+      if (data.success) {
+        this.reset();
+        loadSection('farmers');
+      }
     });
 });
 
-document.querySelectorAll('.delete-farmer').forEach(btn => {
-    btn.addEventListener('click', function() {
-        if (confirm('Are you sure you want to delete this farmer?')) {
-            const username = this.dataset.username;
-            fetch(`../commands/delete_farmer.php?username=${encodeURIComponent(username)}`)
-                .then(response => response.json())
-                .then(data => {
-                    const toast = new bootstrap.Toast(document.getElementById('toast'));
-                    document.getElementById('toastBody').innerHTML = data.success ? 
-                        '<i class="fas fa-check-circle text-success me-2"></i>' + data.message :
-                        '<i class="fas fa-times-circle text-danger me-2"></i>' + data.message;
-                    toast.show();
-                    
-                    if (data.success) {
-                        // Reload the farmers section
-                        loadSection('farmers');
-                    }
-                });
-        }
+// Edit Farmer
+document.getElementById('editFarmerForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  fetch('../commands/edit_farmer.php', { method: 'POST', body: formData })
+    .then(res => res.json())
+    .then(data => {
+      showToast(data.message);
+      if (data.success) {
+        bootstrap.Modal.getInstance(document.getElementById('editFarmerModal')).hide();
+        loadSection('farmers');
+      }
     });
 });
+
+// Search Filter
+document.getElementById('farmerSearch').addEventListener('input', function () {
+  const term = this.value.toLowerCase();
+  document.querySelectorAll('#farmerList tbody tr').forEach(row => {
+    const name = row.querySelector('.farmer-name').textContent.toLowerCase();
+    row.style.display = name.includes(term) ? '' : 'none';
+  });
+});
+
+function showToast(message) {
+  document.getElementById('toastBody').innerText = message;
+  new bootstrap.Toast(document.getElementById('toast')).show();
+}
 </script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
