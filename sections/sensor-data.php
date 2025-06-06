@@ -8,12 +8,14 @@ $sensor_data = $result->fetch_all(MYSQLI_ASSOC);
     <h1 class="h2">Sensor Data</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-            <button class="btn btn-sm btn-outline-secondary">Export</button>
+         <a href="commands/export_data.php" class="btn btn-success mb-3">
+            <i class="fas fa-file-csv me-1"></i> Export data (CSV)
+            </a>
         </div>
     </div>
 </div>
 
-<div class="card mb-4">
+<!-- <div class="card mb-4">
     <div class="card-header">
         <h5 class="card-title">
             <i class="fas fa-chart-area me-2"></i>Sensor Data Chart
@@ -24,7 +26,7 @@ $sensor_data = $result->fetch_all(MYSQLI_ASSOC);
             <canvas id="sensorChart"></canvas>
         </div>
     </div>
-</div>
+</div> -->
 
 <div class="card">
     <div class="card-header">
@@ -40,6 +42,7 @@ $sensor_data = $result->fetch_all(MYSQLI_ASSOC);
                         <th>Temperature (°C)</th>
                         <th>Humidity (%)</th>
                         <th>Timestamp</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,6 +51,7 @@ $sensor_data = $result->fetch_all(MYSQLI_ASSOC);
                         <td><?= $row['temperature'] ?></td>
                         <td><?= $row['humidity'] ?></td>
                         <td><?= $row['timestamp'] ?></td>
+                        <td> </td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
