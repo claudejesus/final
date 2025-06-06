@@ -8,7 +8,7 @@ $sensor_data = $result->fetch_all(MYSQLI_ASSOC);
     <h1 class="h2">Sensor Data</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-         <a href="commands/export_data.php" class="btn btn-success mb-3">
+         <a href="commands/export_data.php" class="btn btn-outline-primary mb-3">
             <i class="fas fa-file-csv me-1"></i> Export data (CSV)
             </a>
         </div>
