@@ -37,6 +37,9 @@ $humidities = array_column($sensor_data, 'humidity');
 
 <h2>Welcome, <?= $_SESSION['user']['username'] ?> (Farmer)</h2>
 <a href="logout.php">Logout</a>
+                <a href="commands/export_data.php" class="btn btn-success mb-3">
+                <i class="fas fa-file-csv me-1"></i> Export Data (CSV)
+                </a>
 
 <h3>Sensor Data</h3>
 <table>
