@@ -26,10 +26,15 @@ $farmer_count = $farmers ? $farmers->num_rows : 0;
 
 <!-- Dashboard Header -->
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3 border-bottom">
-    <h1 class="h2">Dashboard Overview</h1>
+    <h2>Welcome, <?= $_SESSION['user']['username'] ?></h2>
+    <h1 class="h2">Dashboard Overview</h1> 
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-            <button type="button" ref class="btn btn-sm btn-outline-secondary">Export</button>
+            <!-- <button type="button" href="commands/export_farmers.php class="btn btn-sm btn-outline-secondary">Export</button> -->
+            <a href="commands/export_farmers.php" class="btn btn-success mb-3">
+            <i class="fas fa-file-csv me-1"></i> Export Farmers (CSV)
+            </a>
+
         </div>
         <span class="badge bg-primary">
             <i class="fas fa-user-shield me-1"></i> Admin
@@ -83,7 +88,7 @@ $farmer_count = $farmers ? $farmers->num_rows : 0;
     </div>
     <div class="card-body">
         <table class="table table-striped table-hover">
-            <thead class="table-dark">
+            <thead class="table">
                 <tr>
                     <th>Temperature (°C)</th>
                     <th>Humidity (%)</th>
