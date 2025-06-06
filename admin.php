@@ -7,7 +7,7 @@ if ($_SESSION['user']['role'] !== 'admin') {
     header('Location: farmer.php');
     exit;
 }
-
+include 'sections/farmers.php';
 // Fetch sensor data
 $result = $conn->query("SELECT * FROM sensor_data ORDER BY timestamp DESC LIMIT 50");
 $sensor_data = [];
@@ -121,6 +121,12 @@ $farmers = $conn->query("SELECT username FROM users WHERE role = 'farmer'");
                                 <i class="fas fa-fan me-2"></i>Controls
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-section="profile">
+                                <i class="fas fa-user-circle me-2"></i>Profile
+                            </a>
+                        </li>
+
                         <li class="nav-item mt-3">
                             <a class="nav-link text-danger" href="logout.php">
                                 <i class="fas fa-sign-out-alt me-2"></i>Logout
