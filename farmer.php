@@ -115,7 +115,7 @@ if ($latest) {
 </header>
 
 <nav>
-    <a href="farm_dashboard.php"><i class="fas fa-chart-line"></i> Dashboard</a>
+    <a href="farmer.php"><i class="fas fa-chart-line"></i> Dashboard</a>
     <a href="commands/export_data.php"><i class="fas fa-file-csv"></i> Export Data</a>
     <a href="sections/profileFarmer.php" class="profile"><i class="fas fa-user"></i> Profile</a>
     <a href="logout.php" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
