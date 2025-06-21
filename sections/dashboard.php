@@ -42,14 +42,14 @@ $farmer_count = $farmers ? $farmers->num_rows : 0;
                 <i class="fas fa-file-csv me-1"></i> Export Farmers
             </a>
         </div>
-
-        <span class="badge bg-primary align-self-center">
-            <li class="nav-item">
-                <a class="nav-link" data-section="profile">
-                    <i class="fas fa-user-circle me-2"></i>Admin
-                </a>
-            </li>
+        <div class="btn-group me-2">
+        <span class="badge bg-primary w-100 h-100 d-flex align-items-center justify-content-center align-self-center">
+            <a class="nav-link text-white" data-section="profile" style="text-decoration: none;">
+                <i class="fas fa-user-circle me-2"></i>Admin
+            </a>
         </span>
+        </div>
+
     </div>
 </div>
 
