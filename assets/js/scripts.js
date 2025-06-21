@@ -42,6 +42,11 @@ function loadSection(section) {
                 initChart();
             }
             
+            // Initialize farmer management if on farmers section
+            if (section === 'farmers') {
+                setTimeout(initFarmerManagement, 100); // Small delay to ensure DOM is ready
+            }
+            
             // Clear any existing auto-refresh
             if (autoRefreshInterval) {
                 clearInterval(autoRefreshInterval);
@@ -64,6 +69,146 @@ function loadSection(section) {
         .finally(() => {
             spinner.style.display = 'none';
         });
+}
+
+// Initialize farmer management functionality
+function initFarmerManagement() {
+    console.log('=== INITIALIZING FARMER MANAGEMENT ===');
+    
+    // Remove any existing event listeners by cloning and replacing elements
+    const deleteButtons = document.querySelectorAll('.delete-farmer');
+    console.log('Found delete buttons:', deleteButtons.length);
+    
+    deleteButtons.forEach(btn => {
+        // Clone the button to remove old event listeners
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        // Add new event listener
+        newBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const username = this.dataset.username;
+            console.log('Delete button clicked for username:', username);
+            
+            if (confirm('Are you sure you want to delete farmer ' + username + '?')) {
+                console.log('User confirmed deletion');
+                
+                const url = `commands/delete_farmer.php?username=${encodeURIComponent(username)}`;
+                console.log('Making request to:', url);
+                
+                fetch(url)
+                    .then(res => {
+                        console.log('Response status:', res.status);
+                        return res.json();
+                    })
+                    .then(data => {
+                        console.log('Response data:', data);
+                        showToast(data.success ? 'success' : 'error', data.message);
+                        if (data.success) {
+                            console.log('Delete successful, reloading section');
+                            loadSection('farmers');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Fetch error:', error);
+                        showToast('error', 'Failed to delete farmer: ' + error.message);
+                    });
+            }
+        });
+    });
+    
+    // Handle edit buttons
+    const editButtons = document.querySelectorAll('.edit-farmer');
+    console.log('Found edit buttons:', editButtons.length);
+    
+    editButtons.forEach(btn => {
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        newBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const id = this.dataset.id;
+            const username = this.dataset.username;
+            console.log('Edit button clicked for ID:', id, 'Username:', username);
+            
+            document.getElementById('editFarmerId').value = id;
+            document.getElementById('editUsername').value = username;
+            new bootstrap.Modal(document.getElementById('editFarmerModal')).show();
+        });
+    });
+    
+    // Handle register form
+    const registerForm = document.getElementById('registerFarmerForm');
+    if (registerForm) {
+        console.log('Found register form');
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch('commands/register_farmer.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                showToast(data.success ? 'success' : 'error', data.message);
+                if (data.success) {
+                    this.reset();
+                    loadSection('farmers');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('error', 'Failed to register farmer');
+            });
+        });
+    }
+    
+    // Handle edit form
+    const editForm = document.getElementById('editFarmerForm');
+    if (editForm) {
+        console.log('Found edit form');
+        editForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            fetch('commands/edit_farmer.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                showToast(data.success ? 'success' : 'error', data.message);
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('editFarmerModal')).hide();
+                    loadSection('farmers');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('error', 'Failed to update farmer');
+            });
+        });
+    }
+    
+    // Handle search
+    const searchInput = document.getElementById('farmerSearch');
+    if (searchInput) {
+        console.log('Found search input');
+        searchInput.addEventListener('input', function() {
+            const term = this.value.toLowerCase();
+            document.querySelectorAll('#farmerList tbody tr').forEach(row => {
+                const name = row.querySelector('.farmer-name').textContent.toLowerCase();
+                row.style.display = name.includes(term) ? '' : 'none';
+            });
+        });
+    }
+    
+    console.log('=== FARMER MANAGEMENT INITIALIZED ===');
 }
 
 // Initialize chart
@@ -280,64 +425,3 @@ function showToast(type, message) {
     toastBody.innerHTML = `${icon}${message}`;
     toast.show();
 }
-
-// Register farmer form handler
-document.addEventListener('submit', function(e) {
-    if (e.target.id === 'registerFarmerForm') {
-        e.preventDefault();
-        const form = e.target;
-        const formData = new FormData(form);
-        const spinner = document.getElementById('loadingSpinner');
-        
-        spinner.style.display = 'flex';
-        
-        fetch('commands/register_farmer.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.json();
-        })
-        .then(data => {
-            showToast(data.success ? 'success' : 'error', data.message);
-            
-            if (data.success) {
-                form.reset();
-                // Reload farmers section if currently viewing it
-                if (document.querySelector('.nav-link.active').dataset.section === 'farmers') {
-                    loadSection('farmers');
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showToast('error', 'Failed to register farmer');
-        })
-        .finally(() => {
-            spinner.style.display = 'none';
-        });
-    }
-});
-
-document.querySelectorAll('.delete-farmer').forEach(btn => {
-    btn.addEventListener('click', function() {
-        if (confirm('Are you sure you want to delete this farmer?')) {
-            const username = this.dataset.username;
-            fetch(`../commands/delete_farmer.php?username=${encodeURIComponent(username)}`)
-                .then(response => response.json())
-                .then(data => {
-                    const toast = new bootstrap.Toast(document.getElementById('toast'));
-                    document.getElementById('toastBody').innerHTML = data.success ? 
-                        '<i class="fas fa-check-circle text-success me-2"></i>' + data.message :
-                        '<i class="fas fa-times-circle text-danger me-2"></i>' + data.message;
-                    toast.show();
-
-                    if (data.success) {
-                        // Reload the farmers section
-                        loadSection('farmers');
-                    }
-                });
-        }
-    });
-});

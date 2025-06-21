@@ -1,12 +1,9 @@
+register_farmer
+
 <?php
-require '../auth.php';
+// require '../auth.php';
 require '../db.php';
 header('Content-Type: application/json');
-
-if ($_SESSION['user']['role'] !== 'admin') {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    exit;
-}
 
 $username = $_POST['username'] ?? '';
 $password = $_POST['password'] ?? '';
