@@ -12,7 +12,7 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    <button class="btn btn-success btn-lg" onclick="sendCommand('fan_on')">
+                    <button class="btn btn-primary btn-lg" onclick="sendCommand('fan_on')">
                         <i class="fas fa-power-off me-2"></i> Turn Fan ON
                     </button>
                     <button class="btn btn-danger btn-lg" onclick="sendCommand('fan_off')">
