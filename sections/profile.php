@@ -15,7 +15,7 @@ $user = $_SESSION['user'];
     <p><strong>Username:</strong> <?= htmlspecialchars($user['username']) ?></p>
     <p><strong>Role:</strong> <?= ucfirst($user['role']) ?></p>
     <p><strong>Logged in:</strong> <?= date('Y-m-d H:i:s', $_SESSION['login_time'] ?? time()) ?></p>
-    <button class="btn btn-warning mt-3" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+    <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
       <i class="fas fa-lock me-1"></i> Change Password
     </button>
   </div>
