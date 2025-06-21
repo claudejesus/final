@@ -31,17 +31,21 @@ $farmer_count = $farmers ? $farmers->num_rows : 0;
     </div>
     <div class="btn-toolbar">
         <div class="btn-group me-2">
-            <a href="commands/export_farmers.php" class="btn btn-outline-success">
-                <i class="fas fa-file-csv me-1"></i> Export Farmers
-            </a>
-            <a href="commands/export_data.php" class="btn btn-outline-primary">
+            <!-- <a href="commands/export_data.php" class="btn btn-outline-success"> -->
+            <a href="commands/export_data.php" class="btn btn-outline-info">
                 <i class="fas fa-file-csv me-1"></i> Export Sensor Data
             </a>
         </div>
+
+        <div class="btn-group me-2">
+            <a href="commands/export_farmers.php" class="btn btn-outline-primary">
+                <i class="fas fa-file-csv me-1"></i> Export Farmers
+            </a>
+        </div>
+
         <span class="badge bg-primary align-self-center">
-            <!-- <i class="fas fa-user-shield me-1"></i> Admin -->
             <li class="nav-item">
-                <a class="nav-link" href="#" data-section="profile">
+                <a class="nav-link" data-section="profile">
                     <i class="fas fa-user-circle me-2"></i>Admin
                 </a>
             </li>
@@ -52,7 +56,7 @@ $farmer_count = $farmers ? $farmers->num_rows : 0;
 <!-- Stats Cards -->
 <div class="row mb-4">
     <div class="col-md-4">
-        <div class="card text-white bg-success">
+        <div class="card text-white bg-primary">
             <div class="card-body">
                 <h6 class="card-title">Temperature</h6>
                 <h2 class="card-text"><?= !empty($temperatures) ? end($temperatures) . ' °C' : 'N/A' ?></h2>
