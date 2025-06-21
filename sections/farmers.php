@@ -43,7 +43,7 @@ $farmer_list = $farmers->fetch_all(MYSQLI_ASSOC);
       </div>
       <div class="card-body">
         <table class="table table-sm table-hover" id="farmerList">
-          <thead class="table-dark">
+          <thead class="table-black">
             <tr><th>ID</th><th>Username</th><th>Registered</th><th>Actions</th></tr>
           </thead>
           <tbody>
@@ -53,7 +53,7 @@ $farmer_list = $farmers->fetch_all(MYSQLI_ASSOC);
                 <td class="farmer-name"><?= htmlspecialchars($f['username']) ?></td>
                 <td><?= $f['created_at'] ?></td>
                 <td>
-                  <button class="btn btn-sm btn-warning edit-farmer" data-id="<?= $f['id'] ?>" data-username="<?= htmlspecialchars($f['username']) ?>"><i class="fas fa-edit"></i></button>
+                  <button class="btn btn-sm btn-primary edit-farmer" data-id="<?= $f['id'] ?>" data-username="<?= htmlspecialchars($f['username']) ?>"><i class="fas fa-edit"></i></button>
                   <button class="btn btn-sm btn-danger delete-farmer" data-username="<?= $f['username'] ?>"><i class="fas fa-trash-alt"></i></button>
                 </td>
               </tr>
