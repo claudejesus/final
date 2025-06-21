@@ -58,7 +58,7 @@ fetch('../commands/history.php')
         tbody.innerHTML = data.map(cmd => `
             <tr>
                 <td>${cmd.action}</td>
-                <td><span class="badge ${cmd.status === 'success' ? 'bg-success' : 'bg-danger'}">${cmd.status}</span></td>
+                <td><span class="badge ${cmd.status === 'success' ? 'bg-primary' : 'bg-danger'}">${cmd.status}</span></td>
                 <td>${new Date(cmd.timestamp).toLocaleString()}</td>
             </tr>
         `).join('');
@@ -75,7 +75,7 @@ function sendCommand(action) {
     .then(data => {
         const toast = new bootstrap.Toast(document.getElementById('toast'));
         document.getElementById('toastBody').innerHTML = data.success ? 
-            '<i class="fas fa-check-circle text-success me-2"></i>Command sent!' :
+            '<i class="fas fa-check-circle text-primary me-2"></i>Command sent!' :
             '<i class="fas fa-times-circle text-danger me-2"></i>Error: ' + data.error;
         toast.show();
         
@@ -87,7 +87,7 @@ function sendCommand(action) {
                 tbody.innerHTML = data.map(cmd => `
                     <tr>
                         <td>${cmd.action}</td>
-                        <td><span class="badge ${cmd.status === 'success' ? 'bg-success' : 'bg-danger'}">${cmd.status}</span></td>
+                        <td><span class="badge ${cmd.status === 'success' ? 'bg-primary' : 'bg-danger'}">${cmd.status}</span></td>
                         <td>${new Date(cmd.timestamp).toLocaleString()}</td>
                     </tr>
                 `).join('');
