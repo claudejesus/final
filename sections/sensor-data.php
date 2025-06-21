@@ -42,7 +42,7 @@ $sensor_data = $result->fetch_all(MYSQLI_ASSOC);
                         <th>Temperature (°C)</th>
                         <th>Humidity (%)</th>
                         <th>Timestamp</th>
-                        <th>Action</th>
+                        <!-- <th>Action</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -51,7 +51,7 @@ $sensor_data = $result->fetch_all(MYSQLI_ASSOC);
                         <td><?= $row['temperature'] ?></td>
                         <td><?= $row['humidity'] ?></td>
                         <td><?= $row['timestamp'] ?></td>
-                        <td> </td>
+                        <!-- <td> </td> -->
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
