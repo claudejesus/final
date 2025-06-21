@@ -8,46 +8,23 @@ if ($_SESSION['user']['role'] !== 'farmer') {
     exit;
 }
 
-$userId = $_SESSION['user']['id'];
-
-// Fetch last 50 sensor records for this farmer
-$stmt = $conn->prepare("SELECT * FROM sensor_data WHERE id = ? ORDER BY timestamp DESC LIMIT 50");
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$result = $stmt->get_result();
+// Fetch last 50 sensor records from shared hardware
+$result = $conn->query("SELECT temperature, humidity, timestamp FROM sensor_data ORDER BY timestamp DESC LIMIT 50");
 
 $sensor_data = [];
 while ($row = $result->fetch_assoc()) {
     $sensor_data[] = $row;
 }
-$stmt->close();
-
-// Summary stats for current farmer
-$statsQuery = $conn->prepare("
-    SELECT 
-        AVG(temperature) AS avg_temp,
-        AVG(humidity) AS avg_hum,
-        MAX(temperature) AS max_temp,
-        MAX(humidity) AS max_hum,
-        MIN(temperature) AS min_temp,
-        MIN(humidity) AS min_hum
-    FROM sensor_data
-    WHERE id = ?
-");
-$statsQuery->bind_param("i", $userId);
-$statsQuery->execute();
-$statsResult = $statsQuery->get_result()->fetch_assoc();
-$statsQuery->close();
 
 // Prepare alerts based on latest reading
 $latest = $sensor_data[0] ?? null;
 $alerts = [];
 if ($latest) {
     if ($latest['temperature'] > 30) {
-        $alerts[] = "⚠️ High Temperature: {$latest['temperature']}°C";
+        $alerts[] = "\u26a0\ufe0f High Temperature: {$latest['temperature']}\u00b0C";
     }
     if ($latest['humidity'] > 70) {
-        $alerts[] = "⚠️ High Humidity: {$latest['humidity']}%";
+        $alerts[] = "\u26a0\ufe0f High Humidity: {$latest['humidity']}%";
     }
 }
 ?>
@@ -64,15 +41,28 @@ if ($latest) {
             background: #f4f4f4;
         }
         header {
-            background-color: #006400;
+            /* background-color: #006400; */
+            background-color:#000;
             color: white;
+            /* color: black; */
             padding: 15px 20px;
+            position: fixed;
+            top: -9.5px;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
         }
         nav {
-            background-color: #004d00;
+            background: #000;
             padding: 10px 20px;
             display: flex;
+            flex-wrap: wrap;
             gap: 20px;
+            position: fixed;
+            top: 100px;
+            left: 0;
+            width: 100%;
+            z-index: 999;
         }
         nav a {
             color: white;
@@ -83,17 +73,17 @@ if ($latest) {
             text-decoration: underline;
         }
         main {
-            padding: 30px;
+            padding: 150px 30px 80px 30px; /* top padding adjusted for fixed header+nav */
         }
         footer {
-            background-color: #006400;
+            background-color: #000;
             color: white;
             text-align: center;
             padding: 10px;
-            position: relative;
+            position: fixed;
             bottom: 0;
             width: 100%;
-            margin-top: 30px;
+            z-index: 999;
         }
         table {
             width: 100%;
@@ -108,36 +98,6 @@ if ($latest) {
         th {
             background-color: #006400;
             color: white;
-        }
-        .stats-cards {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-        .stats-card {
-            flex: 1;
-            background: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 0 5px #ccc;
-            min-width: 180px;
-            text-align: center;
-        }
-        .actions a {
-            text-decoration: none;
-            margin-right: 15px;
-            padding: 8px 15px;
-            background-color: #28a745;
-            color: white;
-            border-radius: 5px;
-            display: inline-block;
-        }
-        .actions a.logout {
-            background-color: #dc3545;
-        }
-        .actions a.profile {
-            background-color: #007bff;
         }
         #alertBox {
             background-color: #ffcccc;
@@ -163,27 +123,6 @@ if ($latest) {
 
 <main>
 
-    <!-- Summary Cards -->
-    <div class="stats-cards">
-        <div class="stats-card">
-            <h4>🌡️ Avg Temperature</h4>
-            <p><?= number_format($statsResult['avg_temp'], 1) ?> °C</p>
-        </div>
-        <div class="stats-card">
-            <h4>💧 Avg Humidity</h4>
-            <p><?= number_format($statsResult['avg_hum'], 1) ?> %</p>
-        </div>
-        <div class="stats-card">
-            <h4>🔥 Max Temp</h4>
-            <p><?= $statsResult['max_temp'] ?> °C</p>
-        </div>
-        <div class="stats-card">
-            <h4>💦 Max Humidity</h4>
-            <p><?= $statsResult['max_hum'] ?> %</p>
-        </div>
-    </div>
-
-    <!-- Alerts -->
     <?php if (!empty($alerts)): ?>
     <div id="alertBox" style="display:block;">
         <h3 style="color: red;">Alerts:</h3>
@@ -231,7 +170,7 @@ let chart;
 let ctx = document.getElementById('sensorChart').getContext('2d');
 
 fetchAndRender();
-setInterval(fetchAndRender, 15000); // refresh every 15 seconds
+setInterval(fetchAndRender, 15000);
 
 function fetchAndRender() {
     fetch('sensor_data_api.php')
@@ -242,7 +181,7 @@ function fetchAndRender() {
             const humidities = data.map(item => parseFloat(item.humidity));
 
             updateTable(data);
-            updateAlerts(data[0]); // latest data for alert box
+            updateAlerts(data[0]);
 
             if (chart) {
                 chart.data.labels = timestamps;
