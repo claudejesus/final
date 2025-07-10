@@ -1,20 +1,23 @@
 <?php
 require '../db.php';
+header('Content-Type: application/json');
 
-$data = json_decode(file_get_contents('php://input'), true);
+$data = json_decode(file_get_contents("php://input"), true);
 
-$temp = $data['temperature'];
-$humid = $data['humidity'];
+$temperature = $data['temperature'] ?? null;
+$humidity = $data['humidity'] ?? null;
+$cooling_status = $data['cooling_status'] ?? 0;
+$heating_status = $data['heating_status'] ?? 0;
 
-if ($temp && $humid) {
-    $stmt = $conn->prepare("INSERT INTO sensor_data (temperature, humidity) VALUES (?, ?)");
-    $stmt->bind_param("dd", $temp, $humid);
-    if ($stmt->execute()) {
-        echo json_encode(["success" => true]);
-    } else {
-        echo json_encode(["error" => "DB insert failed"]);
-    }
-} else {
-    echo json_encode(["error" => "Missing data"]);
+if ($temperature === null || $humidity === null) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Missing data']);
+    exit;
 }
+
+$stmt = $conn->prepare("INSERT INTO sensor_data (temperature, humidity, cooling_status, heating_status) VALUES (?, ?, ?, ?)");
+$stmt->bind_param("ddii", $temperature, $humidity, $cooling_status, $heating_status);
+$stmt->execute();
+
+echo json_encode(['success' => true]);
 ?>
