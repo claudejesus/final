@@ -22,8 +22,8 @@ const char* ssid = "jesus";
 const char* password = "jesus1234";
 
 // API URLs
-const char* post_url = "http://192.168.10.110/maize_weevil_new/sensors/insert.php";
-const char* control_url = "http://192.168.10.110/maize_weevil_new/sensors/control.php";
+const char* post_url = "http://192.168.10.104/maize_weevil_new/sensors/insert.php";
+const char* control_url = "http://192.168.10.104/maize_weevil_new/sensors/control.php";
 
 void setup() {
   Serial.begin(115200);
