@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sensor POST Test</title>
+</head>
+<body>
+  <h2>Send JSON to insert.php</h2>
+  <button onclick="sendData()">Send</button>
+
+  <script>
+    function sendData() {
+      fetch("http://10.37.116.246/maize_weevil_new/sensors/insert.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          temperature: 20.5,
+          humidity: 56,
+          cooling_status: 1,
+          heating_status: 0
+        })
+      })
+      .then(response => response.text())
+      .then(data => alert("Server response: " + data))
+      .catch(error => alert("Error: " + error));
+    }
+  </script>
+</body>
+</html>
